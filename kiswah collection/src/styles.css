@@ -1,0 +1,87 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
+  --font-display: "Fraunces", serif;
+  --font-sans: "Instrument Sans", sans-serif;
+}
+
+:root {
+  --radius: 0px;
+  --background: oklch(0.94 0.012 80);   /* bone */
+  --foreground: oklch(0.2 0.01 50);     /* ink */
+  --card: oklch(0.965 0.008 80);
+  --card-foreground: oklch(0.2 0.01 50);
+  --popover: oklch(0.965 0.008 80);
+  --popover-foreground: oklch(0.2 0.01 50);
+  --primary: oklch(0.36 0.09 30);       /* oxblood */
+  --primary-foreground: oklch(0.96 0.01 80);
+  --secondary: oklch(0.89 0.015 75);
+  --secondary-foreground: oklch(0.2 0.01 50);
+  --muted: oklch(0.9 0.014 78);
+  --muted-foreground: oklch(0.48 0.015 60);
+  --accent: oklch(0.89 0.015 75);
+  --accent-foreground: oklch(0.2 0.01 50);
+  --destructive: oklch(0.55 0.2 27);
+  --destructive-foreground: oklch(0.96 0.01 80);
+  --border: oklch(0.2 0.01 50 / 15%);
+  --input: oklch(0.2 0.01 50 / 25%);
+  --ring: oklch(0.36 0.09 30);
+  --overlay: oklch(0.2 0.01 50 / 45%);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
+}
+
+@utility btn-solid {
+  background: var(--primary); color: var(--primary-foreground);
+  font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.9rem 1.75rem; transition: opacity .2s;
+  &:hover { opacity: .88; }
+  &:disabled { opacity: .5; }
+}
+@utility btn-line {
+  border: 1px solid var(--foreground); color: var(--foreground);
+  font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.9rem 1.75rem; transition: background .2s;
+  &:hover { background: var(--muted); }
+}
+@utility field {
+  width: 100%; background: transparent; border-bottom: 1px solid var(--input);
+  padding: 0.6rem 0; font-size: 0.95rem; outline: none;
+  &:focus { border-color: var(--foreground); }
+}
+@utility img-slot {
+  background: var(--muted); display: flex; align-items: center; justify-content: center;
+  color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: .1em; text-transform: uppercase;
+}
