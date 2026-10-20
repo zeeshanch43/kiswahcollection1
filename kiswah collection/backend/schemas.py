@@ -24,12 +24,41 @@ class ProductCreate(ProductBase):
     pass
 
 
+class ProductUpdate(BaseModel):
+    """Partial update payload — every field is optional."""
+
+    name: Optional[str] = Field(None, max_length=200)
+    category: Optional[str] = Field(None, max_length=100)
+    price_pkr: Optional[float] = Field(None, gt=0)
+    volume: Optional[str] = None
+    top_notes: Optional[str] = None
+    heart_notes: Optional[str] = None
+    base_notes: Optional[str] = None
+    image_url: Optional[str] = Field(None, max_length=500)
+    stock: Optional[int] = Field(None, ge=0)
+    description: Optional[str] = None
+    longevity: Optional[int] = Field(None, ge=1, le=5)
+
+
 class ProductOut(ProductBase):
     id: int
     created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
+
+
+# -----------------------------------------------------------------------------
+# Admin Schemas
+# -----------------------------------------------------------------------------
+class AdminLoginRequest(BaseModel):
+    username: str = Field(..., max_length=100, example="kiswah")
+    password: str = Field(..., max_length=128)
+
+
+class AdminPasswordChange(BaseModel):
+    current_password: str = Field(..., max_length=128)
+    new_password: str = Field(..., min_length=6, max_length=128)
 
 
 # -----------------------------------------------------------------------------

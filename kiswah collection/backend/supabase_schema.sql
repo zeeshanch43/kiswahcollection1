@@ -53,3 +53,35 @@ CREATE POLICY "Public orders insert access" ON public.orders
 -- Allow authenticated users / service role full access
 CREATE POLICY "Authenticated orders read access" ON public.orders
     FOR SELECT TO authenticated USING (true);
+
+-- =====================================================================
+-- 5. Supabase Storage — public bucket for product images
+--    Run this section too (same SQL Editor query is fine).
+--    Used by POST /api/upload-image (backend/.env -> SUPABASE_STORAGE_BUCKET)
+-- =====================================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('product-images', 'product-images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "product-images select" ON storage.objects;
+CREATE POLICY "product-images select" ON storage.objects
+    FOR SELECT TO anon, authenticated
+    USING (bucket_id = 'product-images');
+
+DROP POLICY IF EXISTS "product-images insert" ON storage.objects;
+CREATE POLICY "product-images insert" ON storage.objects
+    FOR INSERT TO anon, authenticated
+    WITH CHECK (bucket_id = 'product-images');
+
+DROP POLICY IF EXISTS "product-images update" ON storage.objects;
+CREATE POLICY "product-images update" ON storage.objects
+    FOR UPDATE TO anon, authenticated
+    USING (bucket_id = 'product-images');
+
+DROP POLICY IF EXISTS "product-images delete" ON storage.objects;
+CREATE POLICY "product-images delete" ON storage.objects
+    FOR DELETE TO anon, authenticated
+    USING (bucket_id = 'product-images');
+
+-- NOTE: the service_role key (recommended for backend/.env SUPABASE_KEY)
+-- bypasses RLS, so uploads work even without these policies.

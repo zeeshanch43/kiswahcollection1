@@ -20,6 +20,16 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Python backend
+__pycache__/
+*.pyc
+backend/order_logs/*.db
+backend/order_logs/*.xlsx
+backend/static/images/*
+!backend/static/images/.gitkeep
+# Keep Supabase credentials out of git — copy backend/.env.example instead
+backend/.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

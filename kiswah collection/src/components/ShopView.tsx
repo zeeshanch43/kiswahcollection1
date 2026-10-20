@@ -1,9 +1,18 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { FAMILIES, PRODUCTS, formatPKR, type Family, type Product } from "@/lib/products";
+import { useProducts } from "@/hooks/use-products";
 import { useCart } from "@/context/CartContext";
 
-function Img({ src, alt, className = "" }: { src?: string | null | undefined; alt: string; className?: string }) {
+function Img({
+  src,
+  alt,
+  className = "",
+}: {
+  src?: string | null | undefined;
+  alt: string;
+  className?: string;
+}) {
   return src ? (
     <img src={src} alt={alt} loading="lazy" className={`object-cover ${className}`} />
   ) : (
@@ -27,10 +36,11 @@ function Notes({ notes }: { notes: Product["notes"] }) {
 export function ShopView() {
   const [filter, setFilter] = useState<Family | "All">("All");
   const { openProductModal, addToCart } = useCart();
+  const { data: products = PRODUCTS } = useProducts();
 
   const list = useMemo(
-    () => (filter === "All" ? PRODUCTS : PRODUCTS.filter((p) => p.family === filter)),
-    [filter]
+    () => (filter === "All" ? products : products.filter((p) => p.family === filter)),
+    [filter, products],
   );
 
   return (
@@ -54,7 +64,7 @@ export function ShopView() {
             </Link>
           </div>
         </div>
-        <Img src={null} alt="Featured bottle" className="aspect-[4/5] w-full" />
+        <Img src={products[0]?.images[0]} alt="Featured bottle" className="aspect-[4/5] w-full" />
       </section>
 
       {/* Collection Grid */}
@@ -62,7 +72,9 @@ export function ShopView() {
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b pb-4">
           <div>
             <h2 className="text-3xl">The Collection</h2>
-            <p className="text-xs text-muted-foreground mt-1">Showing {list.length} handcrafted fragrances</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Showing {list.length} handcrafted fragrances
+            </p>
           </div>
           <div className="flex flex-wrap gap-5 text-sm">
             {(["All", ...FAMILIES] as const).map((f) => (
@@ -88,7 +100,11 @@ export function ShopView() {
                 onClick={() => openProductModal(p)}
                 className="cursor-pointer overflow-hidden relative"
               >
-                <Img src={p.images[0]} alt={p.name} className="aspect-[4/5] w-full transition-transform duration-300 group-hover:scale-102" />
+                <Img
+                  src={p.images[0]}
+                  alt={p.name}
+                  className="aspect-[4/5] w-full transition-transform duration-300 group-hover:scale-102"
+                />
                 <span className="absolute bottom-2 right-2 bg-background/90 text-[10px] uppercase tracking-wider px-2 py-0.5 border">
                   Quick View
                 </span>

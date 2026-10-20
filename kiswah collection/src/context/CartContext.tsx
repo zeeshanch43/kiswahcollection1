@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { PRODUCTS, type Product } from "@/lib/products";
+import { useProducts } from "@/hooks/use-products";
 
 export type CartItem = {
   product: Product;
@@ -57,6 +58,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [drawerView, setDrawerView] = useState<DrawerView>("closed");
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
 
+  // Once the backend catalog arrives, re-map saved cart items to the API
+  // products (ids change from slugs to database ids; match by name as backup).
+  const { data: catalog } = useProducts();
+  useEffect(() => {
+    if (!catalog) return;
+    setCart((prev) => {
+      let changed = false;
+      const next: CartItem[] = [];
+      for (const item of prev) {
+        const match =
+          catalog.find((p) => p.id === item.product.id) ??
+          catalog.find((p) => p.name === item.product.name);
+        if (match) {
+          if (match !== item.product) changed = true;
+          next.push({ product: match, qty: item.qty });
+        } else if (catalog === PRODUCTS) {
+          // Static fallback catalog — keep items we cannot verify.
+          next.push(item);
+        } else {
+          changed = true; // product no longer exists in the store
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [catalog]);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
@@ -73,7 +100,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const exists = prev.find((item) => item.product.id === product.id);
       if (exists) {
         return prev.map((item) =>
-          item.product.id === product.id ? { ...item, qty: item.qty + qty } : item
+          item.product.id === product.id ? { ...item, qty: item.qty + qty } : item,
         );
       }
       return [...prev, { product, qty }];
@@ -90,9 +117,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart((prev) =>
       qty <= 0
         ? prev.filter((item) => item.product.id !== productId)
-        : prev.map((item) =>
-            item.product.id === productId ? { ...item, qty } : item
-          )
+        : prev.map((item) => (item.product.id === productId ? { ...item, qty } : item)),
     );
   };
 
